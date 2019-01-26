@@ -6,6 +6,35 @@
 
 # Project 2: Continuous Control
 
+## List of Files
+
+- Readme files
+	- __Readmd.md__: project environment introduction
+	- [__Report.md__](Report.md): a description of the my implementation in details
+	- [__Algorithms.md__](Algorithms.md): more details and summary about policy-based methods 
+	- __readme\_imgs__: the folder where all the images used in my readme files stored.
+
+---
+
+- folder [App](App)
+	- __App\Reacher\_1.app__: `Reacher` environment application with a single agent
+	- __App\Reacher\_20.app__: `Reacher` environment application with 20 agents
+
+---
+
+- Code in PyTorch & Python 3
+	- [__model.py__](model.py): definition of training neural network for actor and critic
+	- [__ddpg\_agent.py__](ddpg_agent): Ddefinition of DPG agent with replay buffer
+	- [__Continous\_Control.ipynb__](Continous_Control.ipynb): demonstrates how to interact with the `Reacher` environment with a totally stochastic poilcy
+	- [__DDPG\_1.ipynb__](DDPG_20.ipynb): training a single agent in version 1 with DDPG method
+	- [__DDPG\_20.ipynb__](DDPG_20.ipynb): training 20 agents in version 2 with DDPG method
+	
+--- 
+
+- folder [Model_Weights](Model_Weights)	
+	- __checkpoint\_actor\_1.pth & checkpoint\_critic.pth_20__: saved model weights of the successful 20 agents
+	- __checkpoint\_actor\_20.pth & checkpoint\_critic.pth_20__: saved model weights of the successful 20 agents
+
 ## Environment Intro
 
 **Environment** [Reacher](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Learning-Environment-Examples.md#reacher) 
@@ -23,6 +52,11 @@ Each action is a vector with four numbers, corresponding to torque applicable to
 **Reward**
 [-1, None]
 A reward of +0.1 is provided for each step that the agent's hand is in the goal location.
+
+**Goal**
+
+- **_Version 1(with single agent)_**: the agent receives an average reward (over 100 episodes) of at least +30
+- **_Version 2(with 20 agents)_**: the agent is able to receive an average reward (over 100 episodes, and over all 20 agents) of at least +30.
 
 ## Dependencies
 To set up your python environment to run the code in this repository, follow the instructions below.
@@ -81,10 +115,7 @@ python -m ipykernel install --user --name drlnd --display-name "drlnd"
     (_For AWS_) If you'd like to train the agent on AWS (and have not [enabled a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md)), then please use [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/one_agent/Reacher_Linux_NoVis.zip) (version 1) or [this link](https://s3-us-west-1.amazonaws.com/udacity-drlnd/P2/Reacher/Reacher_Linux_NoVis.zip) (version 2) to obtain the "headless" version of the environment.  You will **not** be able to watch the agent without enabling a virtual screen, but you will be able to train the agent.  (_To watch the agent, you should follow the instructions to [enable a virtual screen](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-on-Amazon-Web-Service.md), and then download the environment for the **Linux** operating system above._)
 
 2. Place the file in the DRLND GitHub repository, in the `p2_continuous-control/` folder, and unzip (or decompress) the file. 
-
-### Instructions
-
-Follow the instructions in `Continuous_Control.ipynb` to get started with training your own agent!  
+ 
 
 ### (Optional) Challenge: Crawler Environment
 

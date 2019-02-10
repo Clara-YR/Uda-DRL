@@ -22,7 +22,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 class Agent():
     """Interacts with and learns from the environment."""
     
-    def __init__(self, state_size, action_size, random_seed):
+    def __init__(self, state_size, action_size, random_seed, num_agents):
         """Initialize an Agent object.
         
         Params
@@ -30,11 +30,14 @@ class Agent():
             state_size (int): dimension of each state
             action_size (int): dimension of each action
             random_seed (int): random seed
+            num_agents (int): number of agents
         """
         self.state_size = state_size
         self.action_size = action_size
         self.seed = random.seed(random_seed)
-
+        self.num_agents = num_agents
+        self.timestep_count = 0
+            
         # Actor Network (w/ Target Network)
         self.actor_local = Actor(state_size, action_size, random_seed).to(device)
         self.actor_target = Actor(state_size, action_size, random_seed).to(device)
@@ -46,31 +49,60 @@ class Agent():
         self.critic_optimizer = optim.Adam(self.critic_local.parameters(), lr=LR_CRITIC, weight_decay=WEIGHT_DECAY)
 
         # Noise process
-        self.noise = OUNoise(action_size, random_seed)
+        self.noise = OUNoise(action_size, random_seed) 
 
         # Replay memory
         self.memory = ReplayBuffer(action_size, BUFFER_SIZE, BATCH_SIZE, random_seed)
+        
     
-    def step(self, state, action, reward, next_state, done):
-        """Save experience in replay memory, and use random sample from buffer to learn."""
-        # Save experience / reward
-        self.memory.add(state, action, reward, next_state, done)
+    def step(self, states, actions, rewards, next_states, dones, 
+             update_every=1, update_times=None):
+        """Save experience in replay memory, and use random sample from buffer to learn.
+        Note: all input should be in the same data type.
+        
+        Params
+        ======
+            update_every (int): timestep interval to update network
+            update_times (int): updating times at once per updating
+        """
+        # Save experience / reward collected from each agent
+        for state, action, reward, next_state, done in zip(states, actions, rewards, next_states, dones):
+            self.memory.add(state, action, reward, next_state, done)
+        
+        # If enough samples are available in memory 
+        # and enough timesteps for the interaction between agents and environemnt
+        if update_times == None:
+            update_times = self.num_agents
+        self.timestep_count +=1
 
         # Learn, if enough samples are available in memory
-        if len(self.memory) > BATCH_SIZE:
-            experiences = self.memory.sample()
-            self.learn(experiences, GAMMA)
+        # and enough timesteps have been run since last update
+        if (len(self.memory) > BATCH_SIZE) and (self.timestep_count == update_every):
+            self.timestep_count = 0
+            # learn and update network for certain times
+            for i in range(update_times):
+                experiences = self.memory.sample()
+                self.learn(experiences, GAMMA)
 
-    def act(self, state, add_noise=True):
-        """Returns actions for given state as per current policy."""
-        state = torch.from_numpy(state).float().to(device)
+    def act(self, states, add_noise=True):
+        """Returns actions for given state as per current policy.
+        
+        Params
+        ======
+            state (array_like): current state
+            add_noise (bool): whether add noise to the actions returned
+            eps (float)：epsilon, for epsilon-greedy action selection
+                        1 = random selection, 0 = greedy selection 
+        """
         self.actor_local.eval()
+        states = torch.from_numpy(states).float().to(device)         
         with torch.no_grad():
-            action = self.actor_local(state).cpu().data.numpy()
+            actions = self.actor_local(states).cpu().data.numpy()
         self.actor_local.train()
         if add_noise:
-            action += self.noise.sample()
-        return np.clip(action, -1, 1)
+            actions += self.noise.sample()
+        
+        return np.clip(actions, -1, 1)
 
     def reset(self):
         self.noise.reset()
@@ -81,12 +113,12 @@ class Agent():
         where:
             actor_target(state) -> action
             critic_target(state, action) -> Q-value
-
         Params
         ======
             experiences (Tuple[torch.Tensor]): tuple of (s, a, r, s', done) tuples 
             gamma (float): discount factor
         """
+        # sampled experiences to train the same agent
         states, actions, rewards, next_states, dones = experiences
 
         # ---------------------------- update critic ---------------------------- #
@@ -101,6 +133,8 @@ class Agent():
         # Minimize the loss
         self.critic_optimizer.zero_grad()
         critic_loss.backward()
+        # use gradient clipping when training the critic network
+        torch.nn.utils.clip_grad_norm_(self.critic_local.parameters(), 1)
         self.critic_optimizer.step()
 
         # ---------------------------- update actor ---------------------------- #
@@ -119,7 +153,6 @@ class Agent():
     def soft_update(self, local_model, target_model, tau):
         """Soft update model parameters.
         θ_target = τ*θ_local + (1 - τ)*θ_target
-
         Params
         ======
             local_model: PyTorch model (weights will be copied from)
@@ -134,6 +167,7 @@ class OUNoise:
 
     def __init__(self, size, seed, mu=0., theta=0.15, sigma=0.2):
         """Initialize parameters and noise process."""
+        self.size = size 
         self.mu = mu * np.ones(size)
         self.theta = theta
         self.sigma = sigma
@@ -147,7 +181,7 @@ class OUNoise:
     def sample(self):
         """Update internal state and return it as a noise sample."""
         x = self.state
-        dx = self.theta * (self.mu - x) + self.sigma * np.array([random.random() for i in range(len(x))])
+        dx = self.theta * (self.mu - x) + self.sigma * np.random.standard_normal(self.size)
         self.state = x + dx
         return self.state
 

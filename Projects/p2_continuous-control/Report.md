@@ -3,32 +3,20 @@
 **Catalog**
 
 1. [Learning Algorithm](#1)
-	- [1.1 My Policy: DDPG](#1.1)
-		- [1.1.1 Continuous Actions](#1.1.1)
-		- [1.1.2 Soft updates](#1.1.2)
-	- [1.2 Code Amendments](#1.2)
-		- [1.2.1 Single Agent to Multiple Agent](#1.2.1)
-		- [1.2.2 Gradient Clipping](#1.2.2)
-		- [1.2.3 Less Aggressive Update Frequency](#1.2.3)
-		- [1.2.4 Noise of Actor Selection](#1.2.4)
 2. [Plot of Rewards](#2)
 3. [Problems & Puzzles](#3)
 4. [Ideas for Future Work](#4)
 
 ## 1. Learning Algorithm
 
-Mmore details and summary about policy-based methods see [Algorithms.md](Algorithms.md).
 
----
-<a name="1.1"></a>
-### 1.1 My Policy: DDPG
 
-I solved the project by making some amendments to the Deep Deterministic Policy Gradients (DDPG) algorithm.
+
 
 **References**
 
 - Papers: [DDPG](https://arxiv.org/abs/1509.02971), [D4PG](https://openreview.net/pdf?id=SyZipzbCb)(Distributed Distributional DDPG)
-- Github: [ddpg-bipedal](https://github.com/udacity/deep-reinforcement-learning/tree/master/ddpg-bipedal), [ddpg-pendulum](https://github.com/udacity/deep-reinforcement-learning/tree/master/ddpg-pendulum), [DeepRL](https://github.com/ShangtongZhang/DeepRL)
+
 
 Key words for DDPG:
 

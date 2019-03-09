@@ -8,14 +8,15 @@
 
 ## List of Files
 
-- [__Report.ipynb__](Report.ipynb): notebook includes code in PyTorch & Python 3 (run in Udacity workspace), as well as learning algorithm, plot of rewards and future ideas of work 
+- [__Report.ipynb__](Report.ipynb): notebook includes code in PyTorch & Python 3 (run in Udacity workspace and trained by GPU), as well as learning algorithm, plot of rewards and future ideas of work. 
+- [__Tennis.ipynb__](Tennis.ipynb): notebook to run solved Tennis environment on CPU on your computer.
 - [__Model_Weights__](Model_Weights): saved model weights of the successful MADDPG agent
 	- __checkpoint\_actor.pth__ : local Actor
 	- __checkpoint\_critic.pth__: local Critic
 - __imgs__: the folder where all the images used in my Report stored.
 	- [__maddpg_rewards.png__](imgs/maddpg_rewards.png): plot of rewards
 - __Readmd.md__: project environment introduction
-- __Tennis.ipynb__: notebook to try solved Tennis environment locally.
+
 
 
 ## Environment Intro
